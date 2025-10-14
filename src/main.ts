@@ -1,4 +1,4 @@
-import { printDotGraph, ServiceModule } from "composed-di"
+import { ServiceModule } from "composed-di"
 import { roomModule } from "./modules/room/di/room.module"
 import { ROOM_CONTROLLER } from "./modules/room/di/room-controller.factory"
 import { getRoomRoutes } from "./modules/room"
@@ -15,8 +15,6 @@ const appModule = ServiceModule.from([
   roomModule,
   reservationModule
 ])
-
-printDotGraph(appModule)
 
 const boostrap = async () => {
   const logger = await appModule.get(LOGGER)
