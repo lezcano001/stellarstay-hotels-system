@@ -1,13 +1,12 @@
 import { Request, Response } from 'express'
-import { HttpErrors } from '../../errors/HttpErrors';
 import { ILogger } from '../common/logger.port';
 import { ReservationService } from './reservation.service';
+import { BadRequestError } from '../../errors/HttpErrors';
 
 export class ReservationController {
   constructor(
     private logger: ILogger,
     private reservationService: ReservationService,
-    private httpErrors: HttpErrors,
   ) {}
 
   // TODO - Add the validation of the input parameters (roomId, checkIn, checkOut) to ensure they are present and correctly formatted.
@@ -19,14 +18,14 @@ export class ReservationController {
 
     if (!roomId || !checkIn || !checkOut) {
       this.logger.error('Missing required parameters:', { roomId, checkIn, checkOut });
-      throw this.httpErrors.badRequest('Missing required parameters');
+      throw new BadRequestError('Missing required parameters');
     }
 
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
 
     if (checkOutDate <= checkInDate) {
-      throw this.httpErrors.badRequest('Check-out date must be after check-in date');
+      throw new BadRequestError('Check-out date must be after check-in date');
     }
 
     try {
@@ -42,7 +41,7 @@ export class ReservationController {
       res.status(200).send('Room reserved successfully');
     } catch (error) {
       this.logger.error('Error reserving room:', { error });
-      throw this.httpErrors.badRequest('Error reserving room');
+      throw new BadRequestError('Error reserving room');
     }
   }
 

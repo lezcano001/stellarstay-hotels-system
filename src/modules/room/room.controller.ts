@@ -1,13 +1,12 @@
 import type { Request, Response } from 'express'
 import { RoomService } from './room.service';
 import { ILogger } from '../common/logger.port';
-import { HttpErrors } from '../../errors/HttpErrors';
+import { BadRequestError } from '../../errors/HttpErrors';
 
 export class RoomController {
   constructor(
     private logger: ILogger,
     private roomService: RoomService,
-    private httpErrors: HttpErrors
   ) {}
 
   async createRoom(req: Request, res: Response) {
@@ -37,7 +36,8 @@ export class RoomController {
     // Validate the format of the checkIn and checkOut parameters, which should use a Date in the format we admit.
     if (typeof checkIn !== 'string' || typeof checkOut !== 'string') {
       this.logger.error('Invalid query parameters', { checkIn, checkOut });
-      throw this.httpErrors.badRequest('Invalid query parameters');
+      // throw this.httpErrors.badRequest('Invalid query parameters');
+      throw new BadRequestError("Invalid query parameters")
     }
 
     const availableRooms = await this.roomService.getAvailableRooms({
